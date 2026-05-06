@@ -32,11 +32,11 @@ The result looks like natural caves and it's only ~30 lines of C. Your map is ju
 
 - [*] Get ncurses rendering a static @ on screen
 - [*] Read h/j/k/l keypresses and move @ around
-- [] Allocate a world map (2D array on the heap) and fill it with walls (#) and floors (.)
-- [] Render only the viewport portion of the map each frame
-- [] Implement camera scrolling — camera follows the player as they approach edges
-- [] Add cellular automata generation so the map looks like a cave
-- [] Add collision detection so the player can't walk through walls
+- [*] Allocate a world map (2D array on the heap) and fill it with walls (#) and floors (.)
+- [*] Render only the viewport portion of the map each frame
+- [*] Implement camera scrolling — camera follows the player as they approach edges
+- [*] Add cellular automata generation so the map looks like a cave
+- [*] Add collision detection so the player can't walk through walls
 - [*] Graceful quit on q with endwin() cleanup
 
 
