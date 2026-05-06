@@ -10,18 +10,33 @@ int main(void) {
   WINDOW *win = stdscr;
   keypad(win, TRUE);
 
-  int total_rows, total_cols;
-  getmaxyx(win, total_rows, total_cols);
+  int viewport_rows, viewport_cols;
+  getmaxyx(win, viewport_rows, viewport_cols);
+
+  // total map
+  int total_rows = viewport_rows * 4;
+  int total_cols = viewport_cols * 4;
+
+  // start player in center of map
   int current_row = total_rows / 2;
   int current_col = total_cols / 2;
 
+  // camera view
+  int camera_row = (total_rows / 2) - (viewport_rows / 2);
+  int camera_col = (total_cols / 2) - (viewport_cols / 2);
+
   window_t window = {.win = win, .total_rows = total_rows, .total_cols = total_cols};
   player_t player = {.symbol = '@', .current_col = current_col, .current_row = current_row};
+  camera_t camera = {.cam_row = camera_row,
+                     .cam_col = camera_col,
+                     .viewport_cols = viewport_cols,
+                     .viewport_rows = viewport_rows};
 
-  mvaddch(player.current_row, player.current_col, player.symbol);
+  update_camera(&camera, &player, &window);
+  mvaddch(player.current_row - camera.cam_row, player.current_col - camera.cam_col, player.symbol);
 
   char **map = init_map(&window);
-  draw_map(map, &window);
+  draw_map(map, &camera);
   int play = 1;
   while (play) {
     char c = getch();
@@ -30,7 +45,7 @@ int main(void) {
       break;
     }
 
-    move_player(&window, map, c, &player);
+    move_player(&window, map, c, &player, &camera);
   }
 
   if (map) {

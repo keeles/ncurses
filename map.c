@@ -24,27 +24,27 @@ int count_neighbour_walls(char **map, window_t *win, int row, int col) {
         neighbour_walls++;
     }
   }
+
   return neighbour_walls;
 }
 
-void smooth_map(char **map, window_t *win, int draw) {
+void smooth_map(char **map, window_t *win) {
   for (int i = 0; i < win->total_rows; i++) {
     for (int j = 0; j < win->total_cols; j++) {
       int neighbour_walls = count_neighbour_walls(map, win, i, j);
       if (neighbour_walls > 4) {
         map[i][j] = '#';
       }
-      if (draw) {
-        mvaddch(i, j, map[i][j]);
-      }
     }
   }
 }
 
-void draw_map(char **map, window_t *win) {
-  for (int i = 0; i < win->total_rows; i++) {
-    for (int j = 0; j < win->total_cols; j++) {
-      mvaddch(i, j, map[i][j]);
+void draw_map(char **map, camera_t *cam) {
+  for (int row = 0; row < cam->viewport_rows; row++) {
+    for (int col = 0; col < cam->viewport_cols; col++) {
+      int world_row = cam->cam_row + row;
+      int world_col = cam->cam_col + col;
+      mvaddch(row, col, map[world_row][world_col]);
     }
   }
 }
@@ -68,7 +68,7 @@ char **init_map(window_t *win) {
   }
 
   for (int i = 0; i < 5; i++) {
-    smooth_map(map, win, 0);
+    smooth_map(map, win);
   }
 
   return map;

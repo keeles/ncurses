@@ -13,4 +13,13 @@ typedef struct Window {
   int total_cols;
 } window_t;
 
-void move_player(window_t *window, char **map, char input, player_t *player);
+typedef struct Camera {
+  int cam_row;
+  int cam_col;
+  int viewport_rows;
+  int viewport_cols;
+} camera_t;
+
+void update_camera(camera_t *cam, player_t *player, window_t *win);
+void move_player(window_t *window, char **map, char input, player_t *player,
+                 camera_t *cam);
