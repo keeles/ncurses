@@ -1,5 +1,7 @@
+#include "bullet.h"
 #include "map.h"
 #include "player.h"
+#include "types.h"
 #include <ncurses.h>
 #include <stdlib.h>
 
@@ -32,22 +34,41 @@ int main(void) {
                      .viewport_cols = viewport_cols,
                      .viewport_rows = viewport_rows};
 
+  // bullets
+  bullet_arr_t *bullet_arr = init_bullets();
+
+  // draw initial state
+  char **map = init_map(&window);
+  draw_map(map, &camera);
   update_camera(&camera, &player, &window);
   mvaddch(player.current_row - camera.cam_row, player.current_col - camera.cam_col, player.symbol);
 
-  char **map = init_map(&window);
-  draw_map(map, &camera);
+  // game loop
   int play = 1;
   while (play) {
+    timeout(50);
     char c = getch();
+
     if (c == 'q') {
       play = 0;
       break;
     }
 
-    move_player(&window, map, c, &player, &camera);
+    if (c == 'f') {
+      shoot_bullet(&player, map, bullet_arr);
+    }
+
+    clear();
+    draw_map(map, &camera);
+    move_player(&window, map, c, &player);
+    update_bullets(bullet_arr, map, &camera, &window);
+    update_camera(&camera, &player, &window);
+    mvaddch(player.current_row - camera.cam_row, player.current_col - camera.cam_col,
+            player.symbol);
+    refresh();
   }
 
+  // free memory
   if (map) {
     for (int i = 0; i < total_rows; i++) {
       if (map[i]) {
@@ -55,6 +76,11 @@ int main(void) {
       }
     }
     free(map);
+  }
+
+  if (bullet_arr) {
+    free(bullet_arr->bullets);
+    free(bullet_arr);
   }
 
   endwin();

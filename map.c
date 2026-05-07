@@ -1,6 +1,4 @@
 #include "map.h"
-#include "player.h"
-#include <ncurses.h>
 #include <stdlib.h>
 
 int count_neighbour_walls(char **map, window_t *win, int row, int col) {

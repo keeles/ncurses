@@ -1,4 +1,4 @@
-#include "player.h"
+#include "types.h"
 #pragma once
 
 void smooth_map(char **map, window_t *win);

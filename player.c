@@ -1,6 +1,4 @@
 #include "player.h"
-#include "map.h"
-#include <ncurses.h>
 
 void update_camera(camera_t *cam, player_t *player, window_t *win) {
   int margin = 5;
@@ -29,7 +27,7 @@ void update_camera(camera_t *cam, player_t *player, window_t *win) {
     cam->cam_col = win->total_cols - cam->viewport_cols;
 }
 
-void move_player(window_t *win, char **map, char input, player_t *player, camera_t *cam) {
+void move_player(window_t *win, char **map, char input, player_t *player) {
   switch (input) {
   case 'h':
     if (player->current_col == 0 || map[player->current_row][player->current_col - 1] == '#') {
@@ -62,11 +60,4 @@ void move_player(window_t *win, char **map, char input, player_t *player, camera
     player->current_col++;
     break;
   }
-  update_camera(cam, player, win);
-
-  clear();
-  draw_map(map, cam);
-
-  mvaddch(player->current_row - cam->cam_row, player->current_col - cam->cam_col, player->symbol);
-  refresh();
 }
