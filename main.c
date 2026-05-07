@@ -2,7 +2,6 @@
 #include "map.h"
 #include "player.h"
 #include "types.h"
-#include <ncurses.h>
 #include <stdlib.h>
 
 int main(void) {

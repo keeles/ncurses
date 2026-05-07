@@ -1,5 +1,4 @@
 #include "types.h"
-#include <ncurses.h>
 #pragma once
 
 void update_camera(camera_t *cam, player_t *player, window_t *win);
