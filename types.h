@@ -2,10 +2,24 @@
 #pragma once
 
 typedef struct Player {
-  char symbol;
   int current_col;
   int current_row;
+  int active;
+  char symbol;
 } player_t;
+
+typedef struct Enemy {
+  int current_col;
+  int current_row;
+  int active;
+  char symbol;
+} enemy_t;
+
+typedef struct {
+  enemy_t *enemies;
+  size_t capacity;
+  size_t length;
+} enemy_arr_t;
 
 typedef struct Window {
   WINDOW *win;

@@ -1,4 +1,5 @@
 #include "bullet.h"
+#include "enemies.h"
 #include "map.h"
 #include "player.h"
 #include "types.h"
@@ -33,19 +34,25 @@ int main(void) {
                      .viewport_cols = viewport_cols,
                      .viewport_rows = viewport_rows};
 
+  // init map
+  char **map = init_map(&window);
+
   // bullets
   bullet_arr_t *bullet_arr = init_bullets();
 
   // draw initial state
-  char **map = init_map(&window);
   draw_map(map, &camera);
+
   update_camera(&camera, &player, &window);
   mvaddch(player.current_row - camera.cam_row, player.current_col - camera.cam_col, player.symbol);
+
+  // enemies
+  enemy_arr_t *enemy_arr = init_enemies(map, &window);
 
   // game loop
   int play = 1;
   while (play) {
-    timeout(50);
+    timeout(100);
     char c = getch();
 
     if (c == 'q') {
@@ -61,6 +68,7 @@ int main(void) {
     draw_map(map, &camera);
     move_player(&window, map, c, &player);
     update_bullets(bullet_arr, map, &camera, &window);
+    update_enemies(enemy_arr, map, &camera, &window);
     update_camera(&camera, &player, &window);
     mvaddch(player.current_row - camera.cam_row, player.current_col - camera.cam_col,
             player.symbol);
@@ -80,6 +88,11 @@ int main(void) {
   if (bullet_arr) {
     free(bullet_arr->bullets);
     free(bullet_arr);
+  }
+
+  if (enemy_arr) {
+    free(enemy_arr->enemies);
+    free(enemy_arr);
   }
 
   endwin();
