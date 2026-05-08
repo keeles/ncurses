@@ -1,11 +1,27 @@
 #include "bullet.h"
+#include <stddef.h>
 #include <stdlib.h>
 
 const size_t MAX_BULLETS = 10;
 
-void increment_bullet_pos(bullet_t *bullet, char **map, camera_t *cam, window_t *win) {
+void increment_bullet_pos(bullet_t *bullet, char **map, camera_t *cam, window_t *win,
+                          enemy_arr_t *enemies) {
   int next_row = bullet->row + bullet->row_delta;
   int next_col = bullet->col + bullet->col_delta;
+
+  for (size_t i = 0; i < enemies->length; i++) {
+    enemy_t *next_enemy = &enemies->enemies[i];
+    if (next_enemy->active == 0) {
+      continue;
+    }
+
+    if (next_enemy->current_col == next_col && next_enemy->current_row == next_row) {
+      next_enemy->active = 0;
+      map[next_row][next_col] = ' ';
+      bullet->active = 0;
+      return;
+    }
+  }
 
   if (map[next_row][next_col] == '#' || next_row == win->total_rows) {
     map[next_row][next_col] = ' ';
@@ -18,7 +34,8 @@ void increment_bullet_pos(bullet_t *bullet, char **map, camera_t *cam, window_t 
   bullet->col += bullet->col_delta;
 }
 
-void update_bullets(bullet_arr_t *bullets, char **map, camera_t *cam, window_t *win) {
+void update_bullets(bullet_arr_t *bullets, char **map, camera_t *cam, window_t *win,
+                    enemy_arr_t *enemies) {
   if (bullets->length == 0) {
     return;
   }
@@ -26,18 +43,14 @@ void update_bullets(bullet_arr_t *bullets, char **map, camera_t *cam, window_t *
   for (size_t i = 0; i < bullets->length; i++) {
     bullet_t *bullet = &bullets->bullets[i];
     if (bullet->active > 0) {
-      increment_bullet_pos(bullet, map, cam, win);
+      increment_bullet_pos(bullet, map, cam, win, enemies);
     }
   }
 }
 
 void shoot_bullet(player_t *player, char **map, bullet_arr_t *bullets) {
-  timeout(1000); // wait up to 1000ms for input
-  int dir = getch();
-  timeout(-1); // restore blocking input
-
   int row_delta = 0, col_delta = 0;
-  switch (dir) {
+  switch (player->last_movement) {
   case 'h':
     col_delta = -1;
     break;

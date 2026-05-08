@@ -35,6 +35,7 @@ void move_player(window_t *win, char **map, char input, player_t *player) {
     }
 
     player->current_col--;
+    player->last_movement = 'h';
     break;
   case 'j':
     if (player->current_row == (win->total_rows - 1) ||
@@ -43,6 +44,7 @@ void move_player(window_t *win, char **map, char input, player_t *player) {
     }
 
     player->current_row++;
+    player->last_movement = 'j';
     break;
   case 'k':
     if (player->current_row == 0 || map[player->current_row - 1][player->current_col] == '#') {
@@ -50,6 +52,7 @@ void move_player(window_t *win, char **map, char input, player_t *player) {
     }
 
     player->current_row--;
+    player->last_movement = 'k';
     break;
   case 'l':
     if (player->current_col == (win->total_cols - 1) ||
@@ -58,6 +61,7 @@ void move_player(window_t *win, char **map, char input, player_t *player) {
     }
 
     player->current_col++;
+    player->last_movement = 'l';
     break;
   }
 }

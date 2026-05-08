@@ -67,12 +67,18 @@ int main(void) {
     clear();
     draw_map(map, &camera);
     move_player(&window, map, c, &player);
-    update_bullets(bullet_arr, map, &camera, &window);
-    update_enemies(enemy_arr, map, &camera, &window);
+    update_bullets(bullet_arr, map, &camera, &window, enemy_arr);
+    update_enemies(enemy_arr, map, &camera, &window, play);
     update_camera(&camera, &player, &window);
     mvaddch(player.current_row - camera.cam_row, player.current_col - camera.cam_col,
             player.symbol);
     refresh();
+
+    if (play == 10) {
+      play = 1;
+    } else {
+      play++;
+    }
   }
 
   // free memory

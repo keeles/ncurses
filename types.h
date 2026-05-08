@@ -6,6 +6,7 @@ typedef struct Player {
   int current_row;
   int active;
   char symbol;
+  char last_movement;
 } player_t;
 
 typedef struct Enemy {

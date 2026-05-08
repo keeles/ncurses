@@ -4,7 +4,13 @@
 
 const size_t MAX_ENEMIES = 20;
 
-void increment_enemy_pos(enemy_t *enemy, char **map, camera_t *cam, window_t *win) {
+void increment_enemy_pos(enemy_t *enemy, char **map, camera_t *cam, window_t *win, int cycles) {
+  // only move every 10 cycles (1 second)
+  if (cycles != 10) {
+    mvaddch(enemy->current_row - cam->cam_row, enemy->current_col - cam->cam_col, enemy->symbol);
+    return;
+  }
+
   int next_row, next_col;
   do {
     int col_delta = (rand() % 3) - 1;
@@ -27,7 +33,7 @@ void increment_enemy_pos(enemy_t *enemy, char **map, camera_t *cam, window_t *wi
   enemy->current_col = next_col;
 }
 
-void update_enemies(enemy_arr_t *enemies, char **map, camera_t *cam, window_t *win) {
+void update_enemies(enemy_arr_t *enemies, char **map, camera_t *cam, window_t *win, int cycles) {
   if (enemies->length == 0) {
     return;
   }
@@ -35,7 +41,7 @@ void update_enemies(enemy_arr_t *enemies, char **map, camera_t *cam, window_t *w
   for (size_t i = 0; i < enemies->length; i++) {
     enemy_t *enemy = &enemies->enemies[i];
     if (enemy->active > 0) {
-      increment_enemy_pos(enemy, map, cam, win);
+      increment_enemy_pos(enemy, map, cam, win, cycles);
     }
   }
 }
