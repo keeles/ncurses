@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-const size_t MAX_ENEMIES = 20;
+const size_t MAX_ENEMIES = 30;
 
 void increment_enemy_pos(enemy_t *enemy, char **map, camera_t *cam, window_t *win, int cycles) {
   // only move every 10 cycles (1 second)

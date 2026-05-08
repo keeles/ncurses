@@ -3,6 +3,7 @@
 #include "map.h"
 #include "player.h"
 #include "types.h"
+#include <ncurses.h>
 #include <stdlib.h>
 
 int main(void) {
@@ -11,6 +12,19 @@ int main(void) {
   noecho();
   WINDOW *win = stdscr;
   keypad(win, TRUE);
+
+  if (has_colors() == TRUE) {
+    start_color();
+
+    // player color
+    init_pair(1, COLOR_MAGENTA, COLOR_BLACK);
+
+    // enemy color
+    init_pair(2, COLOR_GREEN, COLOR_BLACK);
+
+    // bullet color
+    init_pair(3, COLOR_RED, COLOR_BLACK);
+  }
 
   int viewport_rows, viewport_cols;
   getmaxyx(win, viewport_rows, viewport_cols);
@@ -44,10 +58,26 @@ int main(void) {
   draw_map(map, &camera);
 
   update_camera(&camera, &player, &window);
+
+  if (has_colors() == TRUE) {
+    attron(COLOR_PAIR(1));
+  }
+
   mvaddch(player.current_row - camera.cam_row, player.current_col - camera.cam_col, player.symbol);
 
+  if (has_colors() == TRUE) {
+    attroff(COLOR_PAIR(1));
+  }
+
+  if (has_colors() == TRUE) {
+    attron(COLOR_PAIR(2));
+  }
   // enemies
   enemy_arr_t *enemy_arr = init_enemies(map, &window);
+
+  if (has_colors() == TRUE) {
+    attroff(COLOR_PAIR(2));
+  }
 
   // game loop
   int play = 1;
@@ -60,18 +90,56 @@ int main(void) {
       break;
     }
 
+    erase();
+
     if (c == 'f') {
+      if (has_colors() == TRUE) {
+        attron(COLOR_PAIR(3));
+      }
+
       shoot_bullet(&player, map, bullet_arr);
+
+      if (has_colors() == TRUE) {
+        attroff(COLOR_PAIR(3));
+      }
     }
 
-    clear();
     draw_map(map, &camera);
     move_player(&window, map, c, &player);
+
+    if (has_colors() == TRUE) {
+      attron(COLOR_PAIR(3));
+    }
+
     update_bullets(bullet_arr, map, &camera, &window, enemy_arr);
+
+    if (has_colors() == TRUE) {
+      attroff(COLOR_PAIR(3));
+    }
+
+    if (has_colors() == TRUE) {
+      attron(COLOR_PAIR(2));
+    }
+
     update_enemies(enemy_arr, map, &camera, &window, play);
+
+    if (has_colors() == TRUE) {
+      attroff(COLOR_PAIR(2));
+    }
+
     update_camera(&camera, &player, &window);
+
+    if (has_colors() == TRUE) {
+      attron(COLOR_PAIR(1));
+    }
+
     mvaddch(player.current_row - camera.cam_row, player.current_col - camera.cam_col,
             player.symbol);
+
+    if (has_colors() == TRUE) {
+      attroff(COLOR_PAIR(1));
+    }
+
     refresh();
 
     if (play == 10) {
@@ -99,6 +167,11 @@ int main(void) {
   if (enemy_arr) {
     free(enemy_arr->enemies);
     free(enemy_arr);
+  }
+
+  if (has_colors() == TRUE) {
+    attroff(COLOR_PAIR(1));
+    attroff(COLOR_PAIR(2));
   }
 
   endwin();

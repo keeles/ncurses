@@ -31,6 +31,8 @@ void move_player(window_t *win, char **map, char input, player_t *player) {
   switch (input) {
   case 'h':
     if (player->current_col == 0 || map[player->current_row][player->current_col - 1] == '#') {
+      // still update movement attempt to allow for shooting at wall
+      player->last_movement = 'h';
       break;
     }
 
@@ -40,6 +42,7 @@ void move_player(window_t *win, char **map, char input, player_t *player) {
   case 'j':
     if (player->current_row == (win->total_rows - 1) ||
         map[player->current_row + 1][player->current_col] == '#') {
+      player->last_movement = 'j';
       break;
     }
 
@@ -48,6 +51,7 @@ void move_player(window_t *win, char **map, char input, player_t *player) {
     break;
   case 'k':
     if (player->current_row == 0 || map[player->current_row - 1][player->current_col] == '#') {
+      player->last_movement = 'k';
       break;
     }
 
@@ -57,6 +61,7 @@ void move_player(window_t *win, char **map, char input, player_t *player) {
   case 'l':
     if (player->current_col == (win->total_cols - 1) ||
         map[player->current_row][player->current_col + 1] == '#') {
+      player->last_movement = 'l';
       break;
     }
 
