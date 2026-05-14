@@ -1,4 +1,5 @@
 #include "bullet.h"
+#include "types.h"
 #include <stddef.h>
 #include <stdlib.h>
 
@@ -8,6 +9,16 @@ void increment_bullet_pos(bullet_t *bullet, char **map, camera_t *cam, window_t 
                           enemy_arr_t *enemies) {
   int next_row = bullet->row + bullet->row_delta;
   int next_col = bullet->col + bullet->col_delta;
+
+  if (next_row < 0 || next_col < 0) {
+    bullet->active = 0;
+    return;
+  }
+
+  if (next_row >= win->total_rows || next_col >= win->total_cols) {
+    bullet->active = 0;
+    return;
+  }
 
   for (size_t i = 0; i < enemies->length; i++) {
     enemy_t *next_enemy = &enemies->enemies[i];
@@ -23,7 +34,7 @@ void increment_bullet_pos(bullet_t *bullet, char **map, camera_t *cam, window_t 
     }
   }
 
-  if (map[next_row][next_col] == '#' || next_row == win->total_rows) {
+  if (map[next_row][next_col] == '#') {
     map[next_row][next_col] = ' ';
     bullet->active = 0;
     return;
@@ -48,7 +59,7 @@ void update_bullets(bullet_arr_t *bullets, char **map, camera_t *cam, window_t *
   }
 }
 
-void shoot_bullet(player_t *player, char **map, bullet_arr_t *bullets) {
+void shoot_bullet(player_t *player, char **map, bullet_arr_t *bullets, window_t *win) {
   int row_delta = 0, col_delta = 0;
   switch (player->last_movement) {
   case 'h':
@@ -69,6 +80,14 @@ void shoot_bullet(player_t *player, char **map, bullet_arr_t *bullets) {
 
   int next_row = player->current_row + row_delta;
   int next_col = player->current_col + col_delta;
+
+  if (next_row < 0 || next_col < 0) {
+    return;
+  }
+
+  if (next_row >= win->total_rows || next_col >= win->total_cols) {
+    return;
+  }
 
   // check if player right next to wall to avoid adding bullet to mem
   if (map[next_row][next_col] == '#') {

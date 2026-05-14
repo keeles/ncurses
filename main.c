@@ -97,7 +97,7 @@ int main(void) {
         attron(COLOR_PAIR(3));
       }
 
-      shoot_bullet(&player, map, bullet_arr);
+      shoot_bullet(&player, map, bullet_arr, &window);
 
       if (has_colors() == TRUE) {
         attroff(COLOR_PAIR(3));
