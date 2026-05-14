@@ -10,7 +10,7 @@ void increment_bullet_pos(bullet_t *bullet, char **map, camera_t *cam, window_t 
   int next_row = bullet->row + bullet->row_delta;
   int next_col = bullet->col + bullet->col_delta;
 
-  if (next_row < 0 || next_col < 0) {
+  if (next_row <= 0 || next_col < 0) {
     bullet->active = 0;
     return;
   }
@@ -81,7 +81,7 @@ void shoot_bullet(player_t *player, char **map, bullet_arr_t *bullets, window_t 
   int next_row = player->current_row + row_delta;
   int next_col = player->current_col + col_delta;
 
-  if (next_row < 0 || next_col < 0) {
+  if (next_row <= 0 || next_col < 0) {
     return;
   }
 

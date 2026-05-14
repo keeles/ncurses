@@ -5,6 +5,7 @@
 #include "types.h"
 #include <ncurses.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 int main(void) {
@@ -123,6 +124,7 @@ int main(void) {
     }
 
     int remaining_enemies = update_enemies(enemy_arr, map, &camera, &window, play);
+    print_status_line(viewport_cols, remaining_enemies);
 
     if (has_colors() == TRUE) {
       attroff(COLOR_PAIR(2));

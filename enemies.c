@@ -18,7 +18,7 @@ void increment_enemy_pos(enemy_t *enemy, char **map, camera_t *cam, window_t *wi
     next_row = enemy->current_row + row_delta;
     next_col = enemy->current_col + col_delta;
 
-    if (next_row < 0 || next_row >= win->total_rows) {
+    if (next_row <= 1 || next_row >= win->total_rows) {
       next_row = enemy->current_row;
     }
 
@@ -55,6 +55,9 @@ void spawn_enemies(enemy_arr_t *enemies, char **map, window_t *win) {
     int rand_row, rand_col;
     do {
       rand_row = rand() % win->total_rows;
+      if (rand_row == 0) {
+        rand_row = 1;
+      }
       rand_col = rand() % win->total_cols;
     } while (map[rand_row][rand_col] == '#');
 

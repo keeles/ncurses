@@ -50,7 +50,7 @@ void move_player(window_t *win, char **map, char input, player_t *player) {
     player->last_movement = 'j';
     break;
   case 'k':
-    if (player->current_row == 0 || map[player->current_row - 1][player->current_col] == '#') {
+    if (player->current_row == 1 || map[player->current_row - 1][player->current_col] == '#') {
       player->last_movement = 'k';
       break;
     }
