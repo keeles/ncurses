@@ -33,17 +33,21 @@ void increment_enemy_pos(enemy_t *enemy, char **map, camera_t *cam, window_t *wi
   enemy->current_col = next_col;
 }
 
-void update_enemies(enemy_arr_t *enemies, char **map, camera_t *cam, window_t *win, int cycles) {
+int update_enemies(enemy_arr_t *enemies, char **map, camera_t *cam, window_t *win, int cycles) {
   if (enemies->length == 0) {
-    return;
+    return 0;
   }
 
+  int remaining_enemies = 0;
   for (size_t i = 0; i < enemies->length; i++) {
     enemy_t *enemy = &enemies->enemies[i];
     if (enemy->active > 0) {
       increment_enemy_pos(enemy, map, cam, win, cycles);
+      remaining_enemies++;
     }
   }
+
+  return remaining_enemies;
 }
 
 void spawn_enemies(enemy_arr_t *enemies, char **map, window_t *win) {

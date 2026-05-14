@@ -4,6 +4,7 @@
 #include "player.h"
 #include "types.h"
 #include <ncurses.h>
+#include <stddef.h>
 #include <stdlib.h>
 
 int main(void) {
@@ -121,7 +122,7 @@ int main(void) {
       attron(COLOR_PAIR(2));
     }
 
-    update_enemies(enemy_arr, map, &camera, &window, play);
+    int remaining_enemies = update_enemies(enemy_arr, map, &camera, &window, play);
 
     if (has_colors() == TRUE) {
       attroff(COLOR_PAIR(2));
@@ -141,6 +142,12 @@ int main(void) {
     }
 
     refresh();
+
+    if (remaining_enemies == 0) {
+      game_over(&camera);
+      play = 0;
+      break;
+    }
 
     if (play == 10) {
       play = 1;

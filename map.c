@@ -1,5 +1,28 @@
 #include "map.h"
+#include "types.h"
+#include <ncurses.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+const char *win_screen[] = {
+    "$       $     $       $      $",
+    " $     $    $   $     $      $",
+    "  $   $   $       $   $      $",
+    "   $ $   $         $  $      $",
+    "    $     $       $   $      $",
+    "    $      $     $    $      $",
+    "    $       $   $       $  $  ",
+    "    $         $           $   ",
+    "",
+    "$       $     $       $      $",
+    "$       $     $       $ $    $",
+    "$   $   $     $       $  $   $",
+    "$   $   $     $       $   $  $",
+    "  $   $       $       $    $ $",
+    "  $   $       $       $      $",
+    NULL,
+};
 
 int count_neighbour_walls(char **map, window_t *win, int row, int col) {
   int neighbour_walls = 0;
@@ -45,6 +68,20 @@ void draw_map(char **map, camera_t *cam) {
       mvaddch(row, col, map[world_row][world_col]);
     }
   }
+}
+
+void game_over(camera_t *cam) {
+  erase();
+  int num_rows = sizeof(win_screen) / sizeof(win_screen[0]);
+  int start_row = (cam->viewport_rows / 2) - (num_rows / 2);
+
+  for (int i = 0; win_screen[i] != NULL; i++) {
+    int len = strlen(win_screen[i]);
+    int start_col = (cam->viewport_cols / 2) - (len / 2);
+    mvprintw(start_row + i, start_col, "%s", win_screen[i]);
+  }
+  refresh();
+  sleep(10);
 }
 
 char **init_map(window_t *win) {
