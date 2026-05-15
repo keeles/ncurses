@@ -1,8 +1,10 @@
 #include "map.h"
 #include "types.h"
 #include <ncurses.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 const char *win_screen[] = {
@@ -21,6 +23,25 @@ const char *win_screen[] = {
     "$   $   $     $       $   $  $",
     "  $   $       $       $    $ $",
     "  $   $       $       $      $",
+    NULL,
+};
+
+const char *lose_screen[] = {
+    "$       $     $       $      $",
+    " $     $    $   $     $      $",
+    "  $   $   $       $   $      $",
+    "   $ $   $         $  $      $",
+    "    $     $       $   $      $",
+    "    $      $     $    $      $",
+    "    $       $   $       $  $  ",
+    "    $         $           $   ",
+    "",
+    "$         $        $    $$$$$$",
+    "$       $   $    $   $  $     ",
+    "$     $       $   $     $     ",
+    "$     $       $    $    $$$$$$",
+    "$       $   $    $   $  $     ",
+    "$$$$$     $        $    $$$$$$",
     NULL,
 };
 
@@ -70,7 +91,7 @@ void draw_map(char **map, camera_t *cam) {
   }
 }
 
-void game_over(camera_t *cam) {
+void game_win(camera_t *cam) {
   erase();
   int num_rows = sizeof(win_screen) / sizeof(win_screen[0]);
   int start_row = (cam->viewport_rows / 2) - (num_rows / 2);
@@ -79,6 +100,20 @@ void game_over(camera_t *cam) {
     int len = strlen(win_screen[i]);
     int start_col = (cam->viewport_cols / 2) - (len / 2);
     mvprintw(start_row + i, start_col, "%s", win_screen[i]);
+  }
+  refresh();
+  sleep(10);
+}
+
+void game_lose(camera_t *cam) {
+  erase();
+  int num_rows = sizeof(lose_screen) / sizeof(lose_screen[0]);
+  int start_row = (cam->viewport_rows / 2) - (num_rows / 2);
+
+  for (int i = 0; lose_screen[i] != NULL; i++) {
+    int len = strlen(lose_screen[i]);
+    int start_col = (cam->viewport_cols / 2) - (len / 2);
+    mvprintw(start_row + i, start_col, "%s", lose_screen[i]);
   }
   refresh();
   sleep(10);
@@ -110,9 +145,23 @@ char **init_map(window_t *win) {
   return map;
 }
 
-void print_status_line(int viewport_cols, int remaining_enemies) {
-  // TODO: Add countdown time limit? Put title in status line, other info?
+int print_status_line(int viewport_cols, int remaining_enemies, time_t end_time) {
+  time_t current_time = time(NULL);
+  long remaining = (long)difftime(end_time, current_time);
+  if (remaining < 0)
+    remaining = 0; // clamp so it doesn't go negative
+  long minutes = remaining / 60;
+  long seconds = remaining % 60;
+
+  char timer_str[12];
+  snprintf(timer_str, sizeof(timer_str), "%02ld:%02ld", minutes, seconds);
+
+  char enemy_str[22];
+  snprintf(enemy_str, sizeof(enemy_str), "REMAINING ENEMIES: %d", remaining_enemies);
+
   char status_buffer[viewport_cols];
-  snprintf(status_buffer, sizeof(status_buffer), "REMAINING ENEMIES: %d", remaining_enemies);
+  snprintf(status_buffer, sizeof(status_buffer), "%s      %s", timer_str, enemy_str);
   mvprintw(0, 0, "%s", status_buffer);
+
+  return remaining;
 }

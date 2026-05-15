@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 int main(void) {
   initscr();
@@ -81,6 +82,10 @@ int main(void) {
     attroff(COLOR_PAIR(2));
   }
 
+  // 8 minute timer
+  time_t start_time = time(NULL);
+  time_t end_time = start_time + (8 * 60);
+
   // game loop
   int play = 1;
   while (play) {
@@ -88,7 +93,6 @@ int main(void) {
     char c = getch();
 
     if (c == 'q') {
-      play = 0;
       break;
     }
 
@@ -124,7 +128,7 @@ int main(void) {
     }
 
     int remaining_enemies = update_enemies(enemy_arr, map, &camera, &window, play);
-    print_status_line(viewport_cols, remaining_enemies);
+    int remaining_time = print_status_line(viewport_cols, remaining_enemies, end_time);
 
     if (has_colors() == TRUE) {
       attroff(COLOR_PAIR(2));
@@ -146,8 +150,12 @@ int main(void) {
     refresh();
 
     if (remaining_enemies == 0) {
-      game_over(&camera);
-      play = 0;
+      game_win(&camera);
+      break;
+    }
+
+    if (remaining_time == 0) {
+      game_lose(&camera);
       break;
     }
 

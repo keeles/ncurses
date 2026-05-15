@@ -5,7 +5,7 @@
 const size_t MAX_ENEMIES = 30;
 
 void increment_enemy_pos(enemy_t *enemy, char **map, camera_t *cam, window_t *win, int cycles) {
-  // only move every 10 cycles (1 second)
+  // only move every 10 cycles (~1 second)
   if (cycles != 10) {
     mvaddch(enemy->current_row - cam->cam_row, enemy->current_col - cam->cam_col, enemy->symbol);
     return;
