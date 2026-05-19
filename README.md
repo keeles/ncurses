@@ -17,7 +17,7 @@
 
 - Walls can be destroyed with bullets
 
-### Enemies: $${\color{green}$}$$
+### Enemies: $${\color{green}\$}$$
 
 - There are 30 of them each game and they move randomly throughout the map
 - Try to shoot all of the enemies before the timer runs out!
