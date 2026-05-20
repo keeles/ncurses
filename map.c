@@ -45,6 +45,25 @@ const char *lose_screen[] = {
     NULL,
 };
 
+const char *quit_screen[] = {
+    "$       $     $       $      $",
+    " $     $    $   $     $      $",
+    "  $   $   $       $   $      $",
+    "   $ $   $         $  $      $",
+    "    $     $       $   $      $",
+    "    $      $     $    $      $",
+    "    $       $   $       $  $  ",
+    "    $         $           $   ",
+    "",
+    "   $     $     $    $    $$$$$",
+    " $   $   $     $    $      $  ",
+    "$     $  $     $    $      $  ",
+    " $  $ $  $     $    $      $  ",
+    "  $  $    $   $     $      $  ",
+    "   $  $     $       $      $  ",
+    NULL,
+};
+
 int count_neighbour_walls(char **map, window_t *win, int row, int col) {
   int neighbour_walls = 0;
 
@@ -117,6 +136,20 @@ void game_lose(camera_t *cam) {
   }
   refresh();
   sleep(10);
+}
+
+void game_quit(camera_t *cam) {
+  erase();
+  int num_rows = sizeof(quit_screen) / sizeof(quit_screen[0]);
+  int start_row = (cam->viewport_rows / 2) - (num_rows / 2);
+
+  for (int i = 0; quit_screen[i] != NULL; i++) {
+    int len = strlen(quit_screen[i]);
+    int start_col = (cam->viewport_cols / 2) - (len / 2);
+    mvprintw(start_row + i, start_col, "%s", quit_screen[i]);
+  }
+  refresh();
+  sleep(2);
 }
 
 char **init_map(window_t *win) {

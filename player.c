@@ -1,4 +1,5 @@
 #include "player.h"
+#include "types.h"
 
 void update_camera(camera_t *cam, player_t *player, window_t *win) {
   int margin = 5;
@@ -27,10 +28,19 @@ void update_camera(camera_t *cam, player_t *player, window_t *win) {
     cam->cam_col = win->total_cols - cam->viewport_cols;
 }
 
-void move_player(window_t *win, char **map, char input, player_t *player) {
+int position_occupied(char **map, int next_row, int next_col) {
+  char position = map[next_row][next_col];
+  if (position == '#' || position == '$') {
+    return 1;
+  }
+  return 0;
+}
+
+void move_player(window_t *win, char **map, char input, player_t *player, camera_t *cam) {
   switch (input) {
   case 'h':
-    if (player->current_col == 0 || map[player->current_row][player->current_col - 1] == '#') {
+    if (player->current_col == 0 ||
+        position_occupied(map, player->current_row, player->current_col - 1)) {
       // still update movement attempt to allow for shooting at wall
       player->last_movement = 'h';
       break;
@@ -41,7 +51,7 @@ void move_player(window_t *win, char **map, char input, player_t *player) {
     break;
   case 'j':
     if (player->current_row == (win->total_rows - 1) ||
-        map[player->current_row + 1][player->current_col] == '#') {
+        position_occupied(map, player->current_row + 1, player->current_col)) {
       player->last_movement = 'j';
       break;
     }
@@ -50,7 +60,8 @@ void move_player(window_t *win, char **map, char input, player_t *player) {
     player->last_movement = 'j';
     break;
   case 'k':
-    if (player->current_row == 1 || map[player->current_row - 1][player->current_col] == '#') {
+    if (player->current_row == 1 ||
+        position_occupied(map, player->current_row - 1, player->current_col)) {
       player->last_movement = 'k';
       break;
     }
@@ -60,7 +71,7 @@ void move_player(window_t *win, char **map, char input, player_t *player) {
     break;
   case 'l':
     if (player->current_col == (win->total_cols - 1) ||
-        map[player->current_row][player->current_col + 1] == '#') {
+        position_occupied(map, player->current_row, player->current_col + 1)) {
       player->last_movement = 'l';
       break;
     }
@@ -68,5 +79,43 @@ void move_player(window_t *win, char **map, char input, player_t *player) {
     player->current_col++;
     player->last_movement = 'l';
     break;
+  case 'L':
+    while ((player->current_col + 1) != (win->total_cols - 1) &&
+           !(position_occupied(map, player->current_row, player->current_col + 1))) {
+      player->current_col++;
+      update_camera(cam, player, win);
+    }
+
+    player->last_movement = 'l';
+    break;
+  case 'H':
+    while (player->current_col > 0 &&
+           !(position_occupied(map, player->current_row, player->current_col - 1))) {
+      player->current_col--;
+      update_camera(cam, player, win);
+    }
+
+    player->last_movement = 'h';
+    break;
+  case 'J':
+    while ((player->current_row) != (win->total_rows - 1) &&
+           !(position_occupied(map, player->current_row + 1, player->current_col))) {
+      player->current_row++;
+      update_camera(cam, player, win);
+    }
+
+    player->last_movement = 'j';
+    break;
+  case 'K':
+    while (player->current_row > 0 &&
+           !(position_occupied(map, player->current_row, player->current_col))) {
+      player->current_row--;
+      update_camera(cam, player, win);
+    }
+
+    player->last_movement = 'k';
+    break;
   }
+
+  update_camera(cam, player, win);
 }

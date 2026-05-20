@@ -26,7 +26,7 @@ void increment_enemy_pos(enemy_t *enemy, char **map, camera_t *cam, window_t *wi
       next_col = enemy->current_col;
     }
 
-  } while (map[next_row][next_col] == '#');
+  } while (map[next_row][next_col] == '#' || map[next_row][next_col] == '@');
 
   mvaddch(next_row - cam->cam_row, next_col - cam->cam_col, enemy->symbol);
   enemy->current_row = next_row;

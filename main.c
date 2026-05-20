@@ -93,6 +93,7 @@ int main(void) {
     char c = getch();
 
     if (c == 'q') {
+      game_quit(&camera);
       break;
     }
 
@@ -111,7 +112,7 @@ int main(void) {
     }
 
     draw_map(map, &camera);
-    move_player(&window, map, c, &player);
+    move_player(&window, map, c, &player, &camera);
 
     if (has_colors() == TRUE) {
       attron(COLOR_PAIR(3));
@@ -133,8 +134,6 @@ int main(void) {
     if (has_colors() == TRUE) {
       attroff(COLOR_PAIR(2));
     }
-
-    update_camera(&camera, &player, &window);
 
     if (has_colors() == TRUE) {
       attron(COLOR_PAIR(1));
@@ -189,6 +188,7 @@ int main(void) {
   if (has_colors() == TRUE) {
     attroff(COLOR_PAIR(1));
     attroff(COLOR_PAIR(2));
+    attroff(COLOR_PAIR(3));
   }
 
   endwin();
