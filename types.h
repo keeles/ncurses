@@ -46,3 +46,26 @@ typedef struct {
   size_t capacity;
   size_t length;
 } bullet_arr_t;
+
+typedef struct Cell {
+  struct Cell *parent;
+  int x;
+  int y;
+  int g;
+  int h;
+  int f;
+  int in_open;
+  int in_closed;
+} cell_t;
+
+typedef struct Cell_Queue {
+  cell_t **items;
+  int num_entries;
+  int capacity;
+} cell_q_t;
+
+typedef struct Cell_State {
+  cell_t *cells;
+  cell_q_t *open_set;
+  cell_q_t *dirty_items;
+} cell_state_t;

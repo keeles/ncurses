@@ -54,6 +54,29 @@ int main(void) {
   // init map
   char **map = init_map(&window);
 
+  // cells for path finding
+  cell_t *cells = malloc(window.total_cols * window.total_rows * sizeof(cell_t));
+
+  cell_q_t open_set = {.num_entries = 0,
+                       .capacity = window.total_cols * window.total_rows,
+                       .items = malloc(sizeof(cell_t *) * window.total_cols * window.total_rows)};
+
+  cell_q_t dirty_items = {.num_entries = 0,
+                          .capacity = window.total_cols * window.total_rows,
+                          .items =
+                              malloc(sizeof(cell_t *) * window.total_cols * window.total_rows)};
+
+  cell_state_t cell_state = {.cells = cells, .open_set = &open_set, .dirty_items = &dirty_items};
+
+  for (int y = 0; y < window.total_rows; y++) {
+    for (int x = 0; x < window.total_cols; x++) {
+      if (x == player.current_col && y == player.current_row) {
+        cell_state.cells[y * window.total_cols + x] = build_cell(NULL, &player, x, y);
+      } else {
+        cell_state.cells[y * window.total_cols + x] = build_cell(NULL, &player, x, y);
+      }
+    }
+  }
   // bullets
   bullet_arr_t *bullet_arr = init_bullets();
 
@@ -128,7 +151,8 @@ int main(void) {
       attron(COLOR_PAIR(2));
     }
 
-    int remaining_enemies = update_enemies(enemy_arr, map, &camera, &window, play);
+    int remaining_enemies =
+        update_enemies(enemy_arr, map, &cell_state, &camera, &window, play, &player);
     int remaining_time = print_status_line(viewport_cols, remaining_enemies, end_time);
 
     if (has_colors() == TRUE) {
@@ -173,6 +197,18 @@ int main(void) {
       }
     }
     free(map);
+  }
+
+  if (cells) {
+    free(cells);
+  }
+
+  if (open_set.items) {
+    free(open_set.items);
+  }
+
+  if (dirty_items.items) {
+    free(dirty_items.items);
   }
 
   if (bullet_arr) {
