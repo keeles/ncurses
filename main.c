@@ -56,19 +56,17 @@ int main(void) {
 
   // cells for path finding
   cell_t *cells = malloc(window.total_cols * window.total_rows * sizeof(cell_t));
-
   cell_q_t open_set = {.num_entries = 0,
                        .capacity = window.total_cols * window.total_rows,
                        .items = malloc(sizeof(cell_t *) * window.total_cols * window.total_rows)};
-
   cell_q_t dirty_items = {.num_entries = 0,
                           .capacity = window.total_cols * window.total_rows,
                           .items =
                               malloc(sizeof(cell_t *) * window.total_cols * window.total_rows)};
-
   cell_state_t cell_state = {.cells = cells, .open_set = &open_set, .dirty_items = &dirty_items};
 
-  for (int y = 0; y < window.total_rows; y++) {
+  // build initial cells
+  for (int y = 1; y < window.total_rows; y++) {
     for (int x = 0; x < window.total_cols; x++) {
       if (x == player.current_col && y == player.current_row) {
         cell_state.cells[y * window.total_cols + x] = build_cell(NULL, &player, x, y);
@@ -77,6 +75,7 @@ int main(void) {
       }
     }
   }
+
   // bullets
   bullet_arr_t *bullet_arr = init_bullets();
 

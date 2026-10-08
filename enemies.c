@@ -41,7 +41,7 @@ cell_t build_cell(cell_t *parent, player_t *player, int x, int y) {
 
 void try_neighbour(cell_state_t *cell_state, cell_t *current, char **map, window_t *win, int nx,
                    int ny) {
-  // map[0][] is for status bar
+  // map[0][n] is for status bar
   if (nx < 0 || nx == win->total_cols || ny < 1 || ny == win->total_rows || map[ny][nx] == '#') {
     return;
   }
@@ -90,7 +90,6 @@ cell_t *calculate_path(window_t *win, cell_state_t *cell_state, player_t *player
   }
 
   // reset dirty items set
-  memset(cell_state->dirty_items->items, 0, cell_state->dirty_items->num_entries);
   cell_state->dirty_items->num_entries = 0;
 
   cell_t *start = &cell_state->cells[enemy->current_row * win->total_cols + enemy->current_col];
@@ -99,6 +98,10 @@ cell_t *calculate_path(window_t *win, cell_state_t *cell_state, player_t *player
   start->in_open = 1;
   cell_state->open_set->items[0] = start;
   cell_state->open_set->num_entries++;
+
+  // make sure this cell gets reset next search too
+  cell_state->dirty_items->items[0] = start;
+  cell_state->dirty_items->num_entries++;
 
   while (!is_empty(cell_state->open_set)) {
     int best_i = 0;
@@ -181,7 +184,8 @@ int update_enemies(enemy_arr_t *enemies, char **map, cell_state_t *cell_state, c
       continue;
     }
 
-    if (i % 10 == cycles) {
+    // + 1 because cycles resets to 1 not 0
+    if (i % 10 + 1 == cycles) {
       increment_enemy_pos(enemy, cell_state, map, cam, player, win);
     } else {
       mvaddch(enemy->current_row - cam->cam_row, enemy->current_col - cam->cam_col, enemy->symbol);
