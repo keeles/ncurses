@@ -19,5 +19,5 @@
 
 ### Enemies: $${\color{green}＄}$$
 
-- There are 30 of them each game and they move randomly throughout the map
+- There are 30 of them each game and they move towards you over time
 - Try to shoot all of the enemies before the timer runs out!
