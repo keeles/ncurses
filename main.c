@@ -68,11 +68,7 @@ int main(void) {
   // build initial cells
   for (int y = 1; y < window.total_rows; y++) {
     for (int x = 0; x < window.total_cols; x++) {
-      if (x == player.current_col && y == player.current_row) {
-        cell_state.cells[y * window.total_cols + x] = build_cell(NULL, &player, x, y);
-      } else {
-        cell_state.cells[y * window.total_cols + x] = build_cell(NULL, &player, x, y);
-      }
+      cell_state.cells[y * window.total_cols + x] = build_cell(NULL, &player, x, y);
     }
   }
 

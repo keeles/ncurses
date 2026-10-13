@@ -42,7 +42,7 @@ cell_t build_cell(cell_t *parent, player_t *player, int x, int y) {
 void try_neighbour(cell_state_t *cell_state, cell_t *current, char **map, window_t *win, int nx,
                    int ny) {
   // map[0][n] is for status bar
-  if (nx < 0 || nx == win->total_cols || ny < 1 || ny == win->total_rows || map[ny][nx] == '#') {
+  if (nx <= 0 || nx == win->total_cols || ny <= 1 || ny == win->total_rows || map[ny][nx] == '#') {
     return;
   }
 
@@ -50,6 +50,10 @@ void try_neighbour(cell_state_t *cell_state, cell_t *current, char **map, window
   if (n->in_closed) {
     return;
   }
+
+  // add to dirty items
+  cell_state->dirty_items->items[cell_state->dirty_items->num_entries] = n;
+  cell_state->dirty_items->num_entries++;
 
   // tentative_g = current->g + cost_of_moving(current, neighbor)
   // in my current 4 directional movement, cost_of_moving always is 1
@@ -62,17 +66,12 @@ void try_neighbour(cell_state_t *cell_state, cell_t *current, char **map, window
 
     if (n->in_open == 0) {
       n->in_open = 1;
-      if (cell_state->open_set->num_entries == 0) {
-        cell_state->open_set->items[0] = n;
-      } else {
-        cell_state->open_set->items[cell_state->open_set->num_entries] = n;
-      }
+      cell_state->open_set->items[cell_state->open_set->num_entries] = n;
       cell_state->open_set->num_entries++;
     }
   }
 }
 
-// TODO: enemies seem to find path at first but as they get close they stop moving
 cell_t *calculate_path(window_t *win, cell_state_t *cell_state, player_t *player, enemy_t *enemy,
                        char **map) {
   // reset shared open_set
@@ -81,12 +80,7 @@ cell_t *calculate_path(window_t *win, cell_state_t *cell_state, player_t *player
   for (int i = 0; i < cell_state->dirty_items->num_entries; i++) {
     int x = cell_state->dirty_items->items[i]->x;
     int y = cell_state->dirty_items->items[i]->y;
-
-    if (x == player->current_col && y == player->current_row) {
-      cell_state->cells[y * win->total_cols + x] = build_cell(NULL, player, x, y);
-    } else {
-      cell_state->cells[y * win->total_cols + x] = build_cell(NULL, player, x, y);
-    }
+    cell_state->cells[y * win->total_cols + x] = build_cell(NULL, player, x, y);
   }
 
   // reset dirty items set
@@ -147,7 +141,7 @@ void increment_enemy_pos(enemy_t *enemy, cell_state_t *cell_state, char **map, c
   // 1. calculate shortest path
   cell_t *next_step = calculate_path(win, cell_state, player, enemy, map);
 
-  if (next_step == NULL) {
+  if (next_step == NULL || space_occupied(map, next_step->y, next_step->x)) {
     // draw in place
     mvaddch(enemy->current_row - cam->cam_row, enemy->current_col - cam->cam_col, enemy->symbol);
     return;
