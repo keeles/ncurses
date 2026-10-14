@@ -130,7 +130,10 @@ cell_t *calculate_path(window_t *win, cell_state_t *cell_state, player_t *player
 }
 
 int space_occupied(char **map, int next_row, int next_col) {
-  if (map[next_row][next_col] == '#' || map[next_row][next_col] == '@') {
+  // if (map[next_row][next_col] == '#' || map[next_row][next_col] == '@') {
+  //   return 1;
+  // }
+  if (map[next_row][next_col] != ' ') {
     return 1;
   }
   return 0;
@@ -140,6 +143,11 @@ void increment_enemy_pos(enemy_t *enemy, cell_state_t *cell_state, char **map, c
                          player_t *player, window_t *win) {
   // 1. calculate shortest path
   cell_t *next_step = calculate_path(win, cell_state, player, enemy, map);
+
+  if (next_step->x == player->current_col && next_step->y == player->current_row) {
+    // hit
+    player->lives--;
+  }
 
   if (next_step == NULL || space_occupied(map, next_step->y, next_step->x)) {
     // draw in place

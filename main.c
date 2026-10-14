@@ -45,7 +45,8 @@ int main(void) {
   int camera_col = (total_cols / 2) - (viewport_cols / 2);
 
   window_t window = {.win = win, .total_rows = total_rows, .total_cols = total_cols};
-  player_t player = {.symbol = '@', .current_col = current_col, .current_row = current_row};
+  player_t player = {
+      .symbol = '@', .lives = 3, .current_col = current_col, .current_row = current_row};
   camera_t camera = {.cam_row = camera_row,
                      .cam_col = camera_col,
                      .viewport_cols = viewport_cols,
@@ -148,7 +149,8 @@ int main(void) {
 
     int remaining_enemies =
         update_enemies(enemy_arr, map, &cell_state, &camera, &window, play, &player);
-    int remaining_time = print_status_line(viewport_cols, remaining_enemies, end_time);
+    int remaining_time =
+        print_status_line(viewport_cols, remaining_enemies, player.lives, end_time);
 
     if (has_colors() == TRUE) {
       attroff(COLOR_PAIR(2));
@@ -166,6 +168,10 @@ int main(void) {
     }
 
     refresh();
+
+    if (player.lives < 0) {
+      game_die(&camera);
+    }
 
     if (remaining_enemies == 0) {
       game_win(&camera);

@@ -8,6 +8,7 @@ void draw_map(char **map, camera_t *cam);
 char **init_map(window_t *win);
 void game_win(camera_t *cam);
 void game_lose(camera_t *cam);
+void game_die(camera_t *cam);
 void game_quit(camera_t *cam);
 int print_status_line(int viewport_cols, int remaining_enemies,
-                      time_t end_time);
+                      int remaining_lives, time_t end_time);

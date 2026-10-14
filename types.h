@@ -5,6 +5,7 @@ typedef struct Player {
   int current_col;
   int current_row;
   int active;
+  int lives;
   char symbol;
   char last_movement;
 } player_t;

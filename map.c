@@ -64,6 +64,25 @@ const char *quit_screen[] = {
     NULL,
 };
 
+const char *death_screen[] = {
+    "$       $     $       $      $",
+    " $     $    $   $     $      $",
+    "  $   $   $       $   $      $",
+    "   $ $   $         $  $      $",
+    "    $     $       $   $      $",
+    "    $      $     $    $      $",
+    "    $       $   $       $  $  ",
+    "    $         $           $   ",
+    "",
+    "$$$$     $    $$$$$  $$$$    $",
+    "$   $    $    $      $   $   $",
+    "$    $   $    $      $    $  $",
+    "$    $   $    $$$$   $    $  $",
+    "$    $   $    $      $    $   ",
+    "$$$$$    $    $$$$$  $$$$$   $",
+    NULL,
+};
+
 int count_neighbour_walls(char **map, window_t *win, int row, int col) {
   int neighbour_walls = 0;
 
@@ -138,6 +157,20 @@ void game_lose(camera_t *cam) {
   sleep(10);
 }
 
+void game_die(camera_t *cam) {
+  erase();
+  int num_rows = sizeof(death_screen) / sizeof(death_screen[0]);
+  int start_row = (cam->viewport_rows / 2) - (num_rows / 2);
+
+  for (int i = 0; death_screen[i] != NULL; i++) {
+    int len = strlen(death_screen[i]);
+    int start_col = (cam->viewport_cols / 2) - (len / 2);
+    mvprintw(start_row + i, start_col, "%s", death_screen[i]);
+  }
+  refresh();
+  sleep(10);
+}
+
 void game_quit(camera_t *cam) {
   erase();
   int num_rows = sizeof(quit_screen) / sizeof(quit_screen[0]);
@@ -161,11 +194,9 @@ char **init_map(window_t *win) {
     for (int j = 0; j < win->total_cols; j++) {
       int range = 100;
       int random_val = (rand() % range) + 1;
-      char c;
+      char c = ' ';
       if (random_val > 80) {
         c = '#';
-      } else {
-        c = ' ';
       }
       map[i][j] = c;
     }
@@ -178,7 +209,8 @@ char **init_map(window_t *win) {
   return map;
 }
 
-int print_status_line(int viewport_cols, int remaining_enemies, time_t end_time) {
+int print_status_line(int viewport_cols, int remaining_enemies, int remaining_lives,
+                      time_t end_time) {
   time_t current_time = time(NULL);
   long remaining = (long)difftime(end_time, current_time);
   if (remaining < 0)
@@ -192,8 +224,12 @@ int print_status_line(int viewport_cols, int remaining_enemies, time_t end_time)
   char enemy_str[22];
   snprintf(enemy_str, sizeof(enemy_str), "REMAINING ENEMIES: %d", remaining_enemies);
 
+  char lives_str[19];
+  snprintf(lives_str, sizeof(lives_str), "REMAINING LIVES: %d", remaining_lives);
+
   char status_buffer[viewport_cols];
-  snprintf(status_buffer, sizeof(status_buffer), "%s      %s", timer_str, enemy_str);
+  snprintf(status_buffer, sizeof(status_buffer), "%s      %s      %s", timer_str, enemy_str,
+           lives_str);
   mvprintw(0, 0, "%s", status_buffer);
 
   return remaining;
