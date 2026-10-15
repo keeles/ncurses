@@ -6,7 +6,16 @@
 
 const size_t MAX_ENEMIES = 30;
 
-int heuristic(int x1, int y1, int x2, int y2) { return abs(x1 - x2) + abs(y1 - y2); }
+// chebyshev distance
+int heuristic(int x1, int y1, int x2, int y2) {
+  int dx = abs(x1 - x2);
+  int dy = abs(y1 - y2);
+  if (dx > dy) {
+    return dx;
+  }
+
+  return dy;
+}
 
 int is_empty(cell_q_t *p) { return p->num_entries == 0; }
 
@@ -119,9 +128,13 @@ cell_t *calculate_path(window_t *win, cell_state_t *cell_state, player_t *player
       return next_step;
     }
 
-    // try all neighbours
+    // try all neighbours, enemies can move diagonal
     try_neighbour(cell_state, current, map, win, current->x + 1, current->y);
+    try_neighbour(cell_state, current, map, win, current->x + 1, current->y + 1);
+    try_neighbour(cell_state, current, map, win, current->x + 1, current->y - 1);
     try_neighbour(cell_state, current, map, win, current->x - 1, current->y);
+    try_neighbour(cell_state, current, map, win, current->x - 1, current->y + 1);
+    try_neighbour(cell_state, current, map, win, current->x - 1, current->y - 1);
     try_neighbour(cell_state, current, map, win, current->x, current->y + 1);
     try_neighbour(cell_state, current, map, win, current->x, current->y - 1);
   }
